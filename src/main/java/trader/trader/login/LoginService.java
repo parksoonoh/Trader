@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import trader.trader.Repository.SessionInfoRepository;
-import trader.trader.Repository.UserInfoRepository;
+import trader.trader.repository.SessionInfoRepository;
+import trader.trader.repository.UserInfoRepository;
 import trader.trader.form.LoginForm;
 import trader.trader.form.SignUpForm;
 
@@ -22,7 +22,6 @@ import java.util.UUID;
 public class LoginService {
     private final UserInfoRepository userInfoRepository;
     private final SessionInfoRepository sessionInfoRepository;
-
     public ResponseEntity<String> signUp(SignUpForm signUpForm) throws SQLException {
         if (userInfoRepository.findPasswordById(signUpForm.getId()) == null){
             signUpForm.setPassword(Hashing(signUpForm.getPassword()));

@@ -1,16 +1,17 @@
-package trader.trader.Repository;
+package trader.trader.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
+import trader.trader.form.SignUpForm;
 
 import java.sql.*;
 
 @Slf4j
 @Repository
-public class SessionInfoRepository {
-    public void save(String userId, String uuid) throws SQLException {
-        String sql = "insert into SESSION_INFO(USER_ID, UUID, SDATE) values (?, ?, ?)";
+public class UserInfoRepository {
+    public String save(SignUpForm signUpForm) throws SQLException {
+        String sql = "insert into USER_INFO(USER_ID, PASSWORD, NICKNAME, MONEY) values (?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -19,38 +20,45 @@ public class SessionInfoRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setString(1, userId);
-            pstmt.setString(2, uuid);
-            pstmt.setLong(3, System.currentTimeMillis());
+            pstmt.setString(1, signUpForm.getId());
+            pstmt.setString(2, signUpForm.getPassword());
+            pstmt.setString(3, signUpForm.getNickname());
+            pstmt.setLong(4, 0L);
             pstmt.executeUpdate();
-            log.info("CREATE NEW SESSION id : " + userId + " UUID : " + uuid);
+
+            return "1";
         } catch (SQLException e) {
-            log.error("SessionInfoRepository save error", e);
+            log.error("UserInfoRepository save error", e);
             throw e;
         }finally {
             close(con,pstmt,null);
         }
     }
 
-    public void delete(String userId) throws SQLException {
-        String sql = "delete from SESSION_INFO where USER_ID=?";
+    public String findPasswordById(String user_id) throws SQLException {
+        String sql = "select * from USER_INFO where user_id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
         try{
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
-            int resultSize = pstmt.executeUpdate();
-            log.info("resultSize={}",resultSize);
-        } catch (SQLException e) {
-            log.info("SessionInfoRepository delete error",e);
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return rs.getString("password");
+            }else{
+                return null;
+            }
+        }catch (SQLException e){
+            log.error("UserInfoRepository IsUniqueId error",e);
             throw e;
         }finally {
-            close(con, pstmt, null);
-        }
 
+            close(con, pstmt, rs);
+        }
     }
 
     private void close(Connection con, Statement stmt, ResultSet rs){

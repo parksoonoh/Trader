@@ -1,14 +1,12 @@
-package trader.trader.Repository;
+package trader.trader.repository;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
 import trader.trader.form.CompanyForm;
 
 import java.sql.*;
-import java.util.Random;
-import java.util.UUID;
+import java.util.ArrayList;
 
 @Slf4j
 @Repository
@@ -42,10 +40,58 @@ public class CompanyRepository {
 
             return "1";
         } catch (SQLException e) {
-            log.error("UserInfoRepository save error", e);
+            log.error("CompanyRepository save error", e);
             throw e;
         }finally {
             close(con,pstmt,null);
+        }
+    }
+
+    public ArrayList<CompanyForm> findAllCompany() throws SQLException {
+        String sql = "select * from COMPANY";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        ArrayList<CompanyForm> companys = new ArrayList<>();
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                CompanyForm company = new CompanyForm();
+                company.setCompanyId(rs.getString("COMPANY_ID"));
+                company.setName(rs.getString("NAME"));
+                company.setStockPrice(rs.getInt("STOCK_PRICE"));
+                company.setBeforePrice(rs.getInt("BEFORE_PRICE"));
+                companys.add(company);
+            }
+            return companys;
+        }catch (SQLException e){
+            log.error("UserInfoRepository IsUniqueId error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void update(CompanyForm companyForm) throws SQLException {
+        String sql = "UPDATE COMPANY SET STOCK_PRICE = ?, BEFORE_PRICE = ? WHERE COMPANY_ID = ?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, companyForm.getStockPrice());
+            pstmt.setInt(2, companyForm.getBeforePrice());
+            pstmt.setString(3, companyForm.getCompanyId());
+            pstmt.executeUpdate();
+            log.info("Company Update Id = " + companyForm.getCompanyId());
+        }catch (SQLException e){
+            log.error("CompanyRepository Update error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
         }
     }
 

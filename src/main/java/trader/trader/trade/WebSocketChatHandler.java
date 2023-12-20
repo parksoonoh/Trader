@@ -12,8 +12,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @Slf4j
 @Component
@@ -26,10 +24,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         log.info("connect with session id :{}, total Session : {}", session.getId(), sessions.size());
     }
 
-    @Scheduled(fixedDelay = 1000)
-    public void sendAll() throws IOException {
-        String m = String.valueOf(System.currentTimeMillis());
-        TextMessage textMessage = new TextMessage(m);
+    public void sendAll(String companyId, int price) throws IOException {
+        TextMessage textMessage = new TextMessage(companyId + price);
         for (WebSocketSession connected : sessions){
             connected.sendMessage(textMessage);
         }
