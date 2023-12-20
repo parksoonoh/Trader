@@ -11,7 +11,7 @@ import java.sql.*;
 @Repository
 public class SessionInfoRepository {
     public void save(String userId, String uuid) throws SQLException {
-        String sql = "insert into SESSION_INFO(USER_ID, SESSION, DATE) values (?, ?, ?)";
+        String sql = "insert into SESSION_INFO(USER_ID, UUID, SDATE) values (?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -24,7 +24,7 @@ public class SessionInfoRepository {
             pstmt.setString(2, uuid);
             pstmt.setLong(3, System.currentTimeMillis());
             pstmt.executeUpdate();
-            log.info("CREATE NEW SESSION id : " + userId + "session : " + uuid);
+            log.info("CREATE NEW SESSION id : " + userId + " UUID : " + uuid);
         } catch (SQLException e) {
             log.error("SessionInfoRepository save error", e);
             throw e;

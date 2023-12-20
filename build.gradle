@@ -11,6 +11,12 @@ java {
 	sourceCompatibility = '17'
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -19,7 +25,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'com.h2database:h2'
+	implementation group: 'com.oracle.ojdbc', name: 'orai18n', version: '19.3.0.0'
+
+	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

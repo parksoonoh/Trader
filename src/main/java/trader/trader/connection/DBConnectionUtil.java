@@ -12,6 +12,11 @@ import static trader.trader.connection.ConnectionConst.*;
 public class DBConnectionUtil {
     public  static Connection getConnection() {
         try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try {
             Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             log.info("get connection={}, class={}", connection, connection.getClass());
             return connection;

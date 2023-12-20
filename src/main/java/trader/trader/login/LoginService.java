@@ -2,7 +2,10 @@ package trader.trader.login;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import trader.trader.Repository.SessionInfoRepository;
 import trader.trader.Repository.UserInfoRepository;
 
@@ -19,28 +22,39 @@ public class LoginService {
     private final UserInfoRepository userInfoRepository;
     private final SessionInfoRepository sessionInfoRepository;
 
-    public String signUp(SignUpForm signUpForm) throws SQLException {
-        if (userInfoRepository.findById(signUpForm.getId()).equals("true")){
+    public ResponseEntity<String> signUp(SignUpForm signUpForm) throws SQLException {
+        if (userInfoRepository.findPasswordById(signUpForm.getId()) == null){
             signUpForm.setPassword(Hashing(signUpForm.getPassword()));
 
             userInfoRepository.save(signUpForm);
             log.info("INSERT NEW USER id : " + signUpForm.getId());
-            return "새로운 유저 생성됨";
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
         log.info("USER ID Redundancy Error id : " + signUpForm.getId());
-        return "아이디 중복 오류";
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public String login(LoginForm loginForm) throws SQLException {
-        if (userInfoRepository.findById(loginForm.getId()).equals(Hashing(loginForm.getPassword()))) {
+    public ResponseEntity<String> login(LoginForm loginForm) throws SQLException {
+        String findPassword = userInfoRepository.findPasswordById(loginForm.getId());
+
+        if (findPassword == null){
+            log.info("Id Not Exist id : " + loginForm.getId());
+            return new ResponseEntity<>("1",HttpStatus.BAD_REQUEST);
+        }
+
+        else if (findPassword.equals(Hashing(loginForm.getPassword()))) {
             log.info("USER LOGIN id : " + loginForm.getId());
             sessionInfoRepository.delete(loginForm.getId());
             String uuid = UUID.randomUUID().toString();
             sessionInfoRepository.save(loginForm.getId(), uuid);
-            return uuid;
+
+            return new ResponseEntity<>('"'+uuid+'"', HttpStatus.ACCEPTED);
         }
-        log.info("PASSWORD Error id : " + loginForm.getId());
-        return "False";
+
+        else {
+            log.info("PASSWORD Error id : " + loginForm.getId());
+            return new ResponseEntity<>("2", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private String Hashing(String before){

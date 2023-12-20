@@ -20,7 +20,7 @@ public class TraderApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("http://192.168.40.119:3000")
+						.allowedOrigins("*")
 						.allowedMethods("GET", "POST");
 			}
 		};

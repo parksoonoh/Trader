@@ -35,7 +35,7 @@ public class UserInfoRepository {
         }
     }
 
-    public String findById(String user_id) throws SQLException {
+    public String findPasswordById(String user_id) throws SQLException {
         String sql = "select * from USER_INFO where user_id = ?";
 
         Connection con = null;
@@ -50,7 +50,7 @@ public class UserInfoRepository {
             if (rs.next()){
                 return rs.getString("password");
             }else{
-                return "true";
+                return null;
             }
         }catch (SQLException e){
             log.error("UserInfoRepository IsUniqueId error",e);
