@@ -1,4 +1,4 @@
-package trader.trader.login;
+package trader.trader.form;
 
 import lombok.Data;
 

@@ -3,7 +3,6 @@ package trader.trader.Repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
-import trader.trader.login.SignUpForm;
 
 import java.sql.*;
 

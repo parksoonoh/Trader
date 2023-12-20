@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import trader.trader.Repository.SessionInfoRepository;
 import trader.trader.Repository.UserInfoRepository;
+import trader.trader.form.LoginForm;
+import trader.trader.form.SignUpForm;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
