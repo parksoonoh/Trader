@@ -121,6 +121,30 @@ public class BuyRepository {
         }
     }
 
+    public int findCostById(String userId) throws SQLException {
+        String sql = "select * from BUY where USER_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            rs = pstmt.executeQuery();
+            int total = 0;
+            while (rs.next()){
+                total += rs.getInt("BUY_PRICE") * rs.getInt("QUANTITY");
+            }
+            return total;
+        }catch (SQLException e){
+            log.error("BuyRepository rightNowTrade error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
     private void close(Connection con, Statement stmt, ResultSet rs){
 
         if (rs != null){

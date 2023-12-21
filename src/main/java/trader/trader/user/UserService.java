@@ -24,6 +24,7 @@ public class UserService {
     private final FavoriteRepository favoriteRepository;
     private final CompanyRepository companyRepository;
     private final HasRepository hasRepository;
+    private final BuyRepository buyRepository;
     public UserInfoForm info(String userId) throws SQLException {
         return userInfoRepository.findInfoById(userId);
     }
@@ -55,5 +56,16 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.CREATED);
 
         }
+    }
+
+    public int maxsell(String userId, String companyId) throws SQLException {
+        return hasRepository.findById(userId, companyId)[1];
+    }
+
+    public int maxbuy(String userId, String companyId) throws SQLException {
+        int money = userInfoRepository.findMoneyById(userId);
+        int orderMoney = buyRepository.findCostById(userId);
+        int stockPrice = companyRepository.findStockPriceById(companyId);
+        return (int)((money - orderMoney) / stockPrice);
     }
 }

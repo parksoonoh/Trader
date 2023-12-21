@@ -27,6 +27,8 @@ public class TradeService {
     private final BuyRepository buyRepository;
     private final WebSocketChatHandler webSocketChatHandler;
     private final HasRepository hasRepository;
+    private final UserInfoRepository userInfoRepository;
+
     public ResponseEntity<String> sell(TradeForm tradeForm) throws SQLException, IOException {
         int[] restPQ = hasRepository.findById(tradeForm.getUserId(), tradeForm.getCompanyId());
         restPQ[0] *= restPQ[1];
@@ -36,6 +38,7 @@ public class TradeService {
 
         for (TradeForm trade : tradeForms){
             String buyMessage = "BUY" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            userInfoRepository.updateMoney(trade.getUserId(), userInfoRepository.findMoneyById(trade.getUserId()) - (trade.getPrice() * trade.getQuantity()));
             HasForm hasForm = new HasForm();
             hasForm.setUserId(trade.getUserId());
             hasForm.setCompanyId(trade.getCompanyId());
@@ -52,7 +55,9 @@ public class TradeService {
             }
             webSocketChatHandler.sendById(trade.getUserId(), buyMessage);
 
+
             String sellMessage = "SELL" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            userInfoRepository.updateMoney(tradeForm.getUserId(), userInfoRepository.findMoneyById(tradeForm.getUserId()) + (trade.getPrice() * trade.getQuantity()));
             webSocketChatHandler.sendById(tradeForm.getUserId(), sellMessage);
 
             restPQ[0] -= trade.getPrice() * trade.getQuantity();
@@ -86,6 +91,8 @@ public class TradeService {
         for (TradeForm trade : tradeForms){
             String sellMessage = "SELL" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
 
+            userInfoRepository.updateMoney(trade.getUserId(), userInfoRepository.findMoneyById(trade.getUserId()) + (trade.getPrice() * trade.getQuantity()));
+
             int[] PQ = hasRepository.findById(trade.getUserId(), trade.getCompanyId());
             if(PQ[1] - trade.getQuantity() == 0){
                 hasRepository.delete(trade.getUserId(), trade.getCompanyId());
@@ -101,6 +108,7 @@ public class TradeService {
             webSocketChatHandler.sendById(trade.getUserId(), sellMessage);
 
             String buyMessage = "BUY" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            userInfoRepository.updateMoney(tradeForm.getUserId(), userInfoRepository.findMoneyById(tradeForm.getUserId()) - (trade.getPrice() * trade.getQuantity()));
             initQP[0] += trade.getQuantity() * trade.getPrice();
             tempQ += trade.getQuantity();
             webSocketChatHandler.sendById(tradeForm.getUserId(), buyMessage);

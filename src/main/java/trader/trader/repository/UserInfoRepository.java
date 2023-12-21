@@ -3,6 +3,7 @@ package trader.trader.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
+import trader.trader.form.CompanyForm;
 import trader.trader.form.SignUpForm;
 import trader.trader.form.UserInfoForm;
 
@@ -59,6 +60,50 @@ public class UserInfoRepository {
         }finally {
 
             close(con, pstmt, rs);
+        }
+    }
+
+
+    public int findMoneyById(String user_id) throws SQLException {
+        String sql = "select * from USER_INFO where user_id = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return rs.getInt("MONEY");
+            }
+            return 0;
+        }catch (SQLException e){
+            log.error("UserInfoRepository IsUniqueId error",e);
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+    public void updateMoney(String userId, int money) throws SQLException {
+        String sql = "UPDATE USER_INFO SET MONEY = ? WHERE USER_ID = ?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, money);
+            pstmt.setString(2, userId);
+            pstmt.executeUpdate();
+            log.info("USER_INFO Update Id = " + userId);
+        }catch (SQLException e){
+            log.error("UserInfoRepository Update error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
         }
     }
 

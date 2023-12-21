@@ -33,4 +33,14 @@ public class UserController {
         return userService.favoriteModify(userId, companyId);
     }
 
+    @GetMapping("/api/v1/user/maxsell")
+    public int maxsell(@RequestParam("userId") String userId, @RequestParam("companyId") String companyId) throws SQLException {
+        return userService.maxsell(userId, companyId);
+    }
+
+    @GetMapping("/api/v1/user/maxbuy")
+    public int maxbuy(@RequestParam("userId") String userId, @RequestParam("companyId") String companyId) throws SQLException {
+        return userService.maxbuy(userId, companyId);
+    }
+
 }

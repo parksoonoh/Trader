@@ -145,6 +145,29 @@ public class CompanyRepository {
         }
     }
 
+    public int findStockPriceById(String companyId) throws SQLException {
+        String sql = "select * from COMPANY WHERE COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1,companyId);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return rs.getInt("STOCK_PRICE");
+            }
+            return 0;
+        }catch (SQLException e){
+            log.error("CompanyRepository findStockPriceById error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
 
     private void close(Connection con, Statement stmt, ResultSet rs){
 
