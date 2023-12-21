@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
 import trader.trader.form.CompanyForm;
+import trader.trader.form.HasForm;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -94,6 +95,56 @@ public class CompanyRepository {
             close(con, pstmt, null);
         }
     }
+
+    public CompanyForm findById(CompanyForm company) throws SQLException {
+        String sql = "select * from COMPANY WHERE COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1,company.getCompanyId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                company.setName(rs.getString("NAME"));
+                company.setStockPrice(rs.getInt("STOCK_PRICE"));
+                company.setBeforePrice(rs.getInt("BEFORE_PRICE"));
+            }
+            return company;
+        }catch (SQLException e){
+            log.error("CompanyRepository findById error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public HasForm findHasInfoById(HasForm has) throws SQLException {
+        String sql = "select * from COMPANY WHERE COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1,has.getCompanyId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                has.setCompanyName(rs.getString("NAME"));
+                has.setNowPrice(rs.getInt("STOCK_PRICE"));
+            }
+            return has;
+        }catch (SQLException e){
+            log.error("CompanyRepository findById error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
 
     private void close(Connection con, Statement stmt, ResultSet rs){
 

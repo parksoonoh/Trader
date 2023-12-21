@@ -3,14 +3,17 @@ package trader.trader.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
+import trader.trader.form.CompanyForm;
 import trader.trader.form.SignUpForm;
+import trader.trader.form.TradeForm;
 import trader.trader.form.UserInfoForm;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 @Slf4j
 @Repository
-public class UserInfoRepository {
+public class FavoriteRepository {
     public String save(SignUpForm signUpForm) throws SQLException {
         String sql = "insert into USER_INFO(USER_ID, PASSWORD, NICKNAME, MONEY) values (?, ?, ?, ?)";
 
@@ -36,34 +39,27 @@ public class UserInfoRepository {
         }
     }
 
-    public String findPasswordById(String user_id) throws SQLException {
-        String sql = "select * from USER_INFO where user_id = ?";
-
+    public void delete(TradeForm tradeForm) throws SQLException {
+        String sql = "DELETE FROM BUY WHERE BDATE = ? AND COMPANY_ID = ?";
         Connection con = null;
         PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
         try{
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, user_id);
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                return rs.getString("password");
-            }else{
-                return null;
-            }
+            pstmt.setLong(1, tradeForm.getDate());
+            pstmt.setString(2, tradeForm.getCompanyId());
+            pstmt.executeUpdate();
+            log.info("BUY deleted Id = " + tradeForm.getCompanyId());
         }catch (SQLException e){
-            log.error("UserInfoRepository IsUniqueId error",e);
+            log.error("BuyRepository delete error",e);
             throw e;
         }finally {
-
-            close(con, pstmt, rs);
+            close(con, pstmt, null);
         }
     }
 
-    public UserInfoForm findInfoById(String userId) throws SQLException {
-        String sql = "select * from USER_INFO where user_id = ?";
+    public ArrayList<CompanyForm> findById(String userId) throws SQLException {
+        String sql = "select * from FAVORITE where user_id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -74,14 +70,15 @@ public class UserInfoRepository {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, userId);
             rs = pstmt.executeQuery();
-            UserInfoForm userInfoForm = new UserInfoForm();
-            if (rs.next()){
-                userInfoForm.setUserName(rs.getString("NICKNAME"));
-                userInfoForm.setMoney(rs.getInt("MONEY"));
+            ArrayList<CompanyForm> companys = new ArrayList<>();
+            while (rs.next()){
+                CompanyForm company = new CompanyForm();
+                company.setCompanyId(rs.getString("COMPANY_ID"));
+                companys.add(company);
             }
-            return userInfoForm;
+            return companys;
         }catch (SQLException e){
-            log.error("UserInfoRepository findInfoById error",e);
+            log.error("FavoriteRepository findById error",e);
             throw e;
         }finally {
 
