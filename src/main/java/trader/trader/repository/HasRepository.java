@@ -14,8 +14,8 @@ import java.util.ArrayList;
 @Slf4j
 @Repository
 public class HasRepository {
-    public String save(SignUpForm signUpForm) throws SQLException {
-        String sql = "insert into USER_INFO(USER_ID, PASSWORD, NICKNAME, MONEY) values (?, ?, ?, ?)";
+    public String save(HasForm hasForm) throws SQLException {
+        String sql = "insert into HAS(USER_ID, COMPANY_ID, HAS_PRICE, QUANTITY) values (?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -24,41 +24,61 @@ public class HasRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setString(1, signUpForm.getId());
-            pstmt.setString(2, signUpForm.getPassword());
-            pstmt.setString(3, signUpForm.getNickname());
-            pstmt.setLong(4, 0L);
+            pstmt.setString(1, hasForm.getUserId());
+            pstmt.setString(2, hasForm.getCompanyId());
+            pstmt.setInt(3, hasForm.getHasPrice());
+            pstmt.setInt(4, hasForm.getQuantity());
             pstmt.executeUpdate();
-
             return "1";
         } catch (SQLException e) {
-            log.error("UserInfoRepository save error", e);
+            log.error("HasRepository save error", e);
             throw e;
         }finally {
             close(con,pstmt,null);
         }
     }
 
-    public void delete(TradeForm tradeForm) throws SQLException {
-        String sql = "DELETE FROM BUY WHERE BDATE = ? AND COMPANY_ID = ?";
+    public void delete(String userId, String companyId) throws SQLException {
+        String sql = "DELETE FROM HAS WHERE USER_ID = ? AND COMPANY_ID = ?";
         Connection con = null;
         PreparedStatement pstmt = null;
         try{
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setLong(1, tradeForm.getDate());
-            pstmt.setString(2, tradeForm.getCompanyId());
+            pstmt.setString(1, userId);
+            pstmt.setString(2, companyId);
             pstmt.executeUpdate();
-            log.info("BUY deleted Id = " + tradeForm.getCompanyId());
+            log.info("HAS deleted Id = " + userId);
         }catch (SQLException e){
-            log.error("BuyRepository delete error",e);
+            log.error("HASRepository delete error",e);
             throw e;
         }finally {
             close(con, pstmt, null);
         }
     }
 
-    public ArrayList<HasForm> findById(String userId) throws SQLException {
+    public void update(HasForm hasForm) throws SQLException {
+        String sql = "UPDATE HAS SET QUANTITY = ? WHERE USER_ID = ? AND COMPANY_ID = ?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setLong(1, hasForm.getQuantity());
+            pstmt.setString(2, hasForm.getUserId());
+            pstmt.setString(3, hasForm.getCompanyId());
+            pstmt.executeUpdate();
+            log.info("HAS Update Id = " + hasForm.getUserId());
+        }catch (SQLException e){
+            log.error("HasRepository Update error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
+
+    public ArrayList<HasForm> findByUserId(String userId) throws SQLException {
         String sql = "select * from HAS where user_id = ?";
 
         Connection con = null;
@@ -80,6 +100,34 @@ public class HasRepository {
                 allHas.add(has);
             }
             return allHas;
+        }catch (SQLException e){
+            log.error("HasRepository findById error",e);
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+    public int[] findById(String userId, String companyId) throws SQLException {
+        String sql = "select * from HAS where user_id = ? AND COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(1, companyId);
+            rs = pstmt.executeQuery();
+            int[] PQ = new int[2];
+            if (rs.next()){
+                PQ[0] = rs.getInt("HAS_PRICE");
+                PQ[0] = rs.getInt("QUANTITY");
+            }
+            return PQ;
         }catch (SQLException e){
             log.error("HasRepository findById error",e);
             throw e;

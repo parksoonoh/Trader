@@ -37,10 +37,23 @@ public class UserService {
     }
 
     public ArrayList<HasForm> has(String userId) throws SQLException {
-        ArrayList<HasForm> allHas = hasRepository.findById(userId);
+        ArrayList<HasForm> allHas = hasRepository.findByUserId(userId);
         for (HasForm has : allHas){
             companyRepository.findHasInfoById(has);
         }
         return allHas;
+    }
+
+    public ResponseEntity<String> favoriteModify(String userId, String companyId) throws SQLException {
+        boolean isExist = favoriteRepository.isExist(userId, companyId);
+        if(isExist == true){
+            favoriteRepository.delete(userId, companyId);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+        }else{
+            favoriteRepository.save(userId, companyId);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+
+        }
     }
 }

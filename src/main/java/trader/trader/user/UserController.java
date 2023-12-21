@@ -28,5 +28,9 @@ public class UserController {
         return userService.has(userId);
     }
 
+    @PostMapping("/api/v1/user/favorite/modify")
+    public ResponseEntity<String> favoriteModify(@RequestParam("userId") String userId, @RequestParam("companyId") String companyId) throws SQLException {
+        return userService.favoriteModify(userId, companyId);
+    }
 
 }

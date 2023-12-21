@@ -14,8 +14,8 @@ import java.util.ArrayList;
 @Slf4j
 @Repository
 public class FavoriteRepository {
-    public String save(SignUpForm signUpForm) throws SQLException {
-        String sql = "insert into USER_INFO(USER_ID, PASSWORD, NICKNAME, MONEY) values (?, ?, ?, ?)";
+    public void save(String userId, String companyId) throws SQLException {
+        String sql = "insert into FAVORITE(USER_ID, COMPANY_ID) values (?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -24,34 +24,30 @@ public class FavoriteRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setString(1, signUpForm.getId());
-            pstmt.setString(2, signUpForm.getPassword());
-            pstmt.setString(3, signUpForm.getNickname());
-            pstmt.setLong(4, 0L);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, companyId);
             pstmt.executeUpdate();
-
-            return "1";
         } catch (SQLException e) {
-            log.error("UserInfoRepository save error", e);
+            log.error("FavoriteRepository save error", e);
             throw e;
         }finally {
             close(con,pstmt,null);
         }
     }
 
-    public void delete(TradeForm tradeForm) throws SQLException {
-        String sql = "DELETE FROM BUY WHERE BDATE = ? AND COMPANY_ID = ?";
+    public void delete(String userId, String companyId) throws SQLException {
+        String sql = "DELETE FROM FAVORITE WHERE USER_ID = ? AND COMPANY_ID = ?";
         Connection con = null;
         PreparedStatement pstmt = null;
         try{
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setLong(1, tradeForm.getDate());
-            pstmt.setString(2, tradeForm.getCompanyId());
+            pstmt.setString(1, userId);
+            pstmt.setString(2, companyId);
             pstmt.executeUpdate();
-            log.info("BUY deleted Id = " + tradeForm.getCompanyId());
+            log.info("Favorite deleted Id = " + userId);
         }catch (SQLException e){
-            log.error("BuyRepository delete error",e);
+            log.error("FavoriteRepository delete error",e);
             throw e;
         }finally {
             close(con, pstmt, null);
@@ -79,6 +75,32 @@ public class FavoriteRepository {
             return companys;
         }catch (SQLException e){
             log.error("FavoriteRepository findById error",e);
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+    public boolean isExist(String userId, String companyId) throws SQLException {
+        String sql = "select * from FAVORITE where user_id = ? AND COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, companyId);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return true;
+            }
+            return false;
+        }catch (SQLException e){
+            log.error("FavoriteRepository isExist error",e);
             throw e;
         }finally {
 
