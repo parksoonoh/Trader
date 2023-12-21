@@ -30,7 +30,8 @@ public class TradeAlgorithm {
             companyForm.setStockPrice(newSP);
             companyForm.setBeforePrice(newBP);
             companyRepository.update(companyForm);
-            webSocketChatHandler.sendAll(companyForm.getCompanyId(), newSP);
+            String message = companyForm.getCompanyId() + newSP + rate;
+            webSocketChatHandler.sendAll(message);
         }
     }
 }
