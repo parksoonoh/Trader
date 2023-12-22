@@ -43,4 +43,14 @@ public class UserController {
         return userService.maxbuy(userId, companyId);
     }
 
+    @GetMapping("/api/v1/user/orderall")
+    public ArrayList<OrderForm> orderall(@RequestParam("userId") String userId) throws SQLException {
+        return userService.orderall(userId);
+    }
+
+    @GetMapping("/api/v1/user/order")
+    public ArrayList<OrderForm> order(@RequestParam("userId") String userId, @RequestParam("companyId") String companyId) throws SQLException {
+        return userService.order(userId, companyId);
+    }
+
 }

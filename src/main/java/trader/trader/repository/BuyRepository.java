@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
 import trader.trader.form.CompanyForm;
+import trader.trader.form.OrderForm;
 import trader.trader.form.TradeForm;
 
 import java.sql.*;
@@ -139,6 +140,59 @@ public class BuyRepository {
             return total;
         }catch (SQLException e){
             log.error("BuyRepository rightNowTrade error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void findOrderAllById(String userId, ArrayList<OrderForm> orderForms) throws SQLException {
+        String sql = "select * from BUY where USER_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                OrderForm orderForm = new OrderForm();
+                orderForm.setDate(rs.getLong("BDATE"));
+                orderForm.setPrice(rs.getInt("BUY_PRICE"));
+                orderForm.setQuantity(rs.getInt("QUANTITY"));
+                orderForms.add(orderForm);
+            }
+        }catch (SQLException e){
+            log.error("BuyRepository findOrderAllById error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void findOrderById(String userId, String companyId, ArrayList<OrderForm> orderForms) throws SQLException {
+        String sql = "select * from BUY where USER_ID = ? AND COMPANY_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, companyId);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                OrderForm orderForm = new OrderForm();
+                orderForm.setDate(rs.getLong("BDATE"));
+                orderForm.setPrice(rs.getInt("BUY_PRICE"));
+                orderForm.setQuantity(rs.getInt("QUANTITY"));
+                orderForms.add(orderForm);
+            }
+        }catch (SQLException e){
+            log.error("BuyRepository findOrderById error",e);
             throw e;
         }finally {
             close(con, pstmt, rs);

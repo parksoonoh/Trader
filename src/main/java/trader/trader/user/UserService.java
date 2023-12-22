@@ -25,6 +25,7 @@ public class UserService {
     private final CompanyRepository companyRepository;
     private final HasRepository hasRepository;
     private final BuyRepository buyRepository;
+    private final SellRepository sellRepository;
     public UserInfoForm info(String userId) throws SQLException {
         return userInfoRepository.findInfoById(userId);
     }
@@ -67,5 +68,19 @@ public class UserService {
         int orderMoney = buyRepository.findCostById(userId);
         int stockPrice = companyRepository.findStockPriceById(companyId);
         return (int)((money - orderMoney) / stockPrice);
+    }
+
+    public ArrayList<OrderForm> orderall(String userId) throws SQLException {
+        ArrayList<OrderForm> orders = new ArrayList<>();
+        buyRepository.findOrderAllById(userId, orders);
+        sellRepository.findOrderAllById(userId, orders);
+        return orders;
+    }
+
+    public ArrayList<OrderForm> order(String userId, String companyId) throws SQLException {
+        ArrayList<OrderForm> orders = new ArrayList<>();
+        buyRepository.findOrderById(userId, companyId, orders);
+        sellRepository.findOrderById(userId, companyId, orders);
+        return orders;
     }
 }
