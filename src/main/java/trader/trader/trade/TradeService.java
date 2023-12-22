@@ -28,8 +28,9 @@ public class TradeService {
     private final WebSocketChatHandler webSocketChatHandler;
     private final HasRepository hasRepository;
     private final UserInfoRepository userInfoRepository;
-
+    private final SessionInfoRepository sessionInfoRepository;
     public ResponseEntity<String> sell(TradeForm tradeForm) throws SQLException, IOException {
+        tradeForm.setUserId(sessionInfoRepository.getUserIdByHttpSession(tradeForm.getUserId()));
         int[] restPQ = hasRepository.findById(tradeForm.getUserId(), tradeForm.getCompanyId());
         restPQ[0] *= restPQ[1];
         restPQ[1] -= tradeForm.getQuantity();
@@ -83,6 +84,7 @@ public class TradeService {
     }
 
     public ResponseEntity<String> buy(TradeForm tradeForm) throws SQLException, IOException {
+        tradeForm.setUserId(sessionInfoRepository.getUserIdByHttpSession(tradeForm.getUserId()));
         int[] initQP = hasRepository.findById(tradeForm.getUserId(), tradeForm.getCompanyId());
         initQP[0] *= initQP[1];
         int tempQ = 0;

@@ -25,7 +25,7 @@ import java.util.UUID;
 public class MainPageService {
     private final CompanyRepository companyRepository;
     public ArrayList<CompanyForm> allcompany() throws SQLException {
-        return companyRepository.findAllCompany() ;
+        return companyRepository.findAllCompany();
     }
 
 }

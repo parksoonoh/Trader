@@ -27,10 +27,12 @@ public class UserService {
     private final BuyRepository buyRepository;
     private final SellRepository sellRepository;
     public UserInfoForm info(String userId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         return userInfoRepository.findInfoById(userId);
     }
 
     public ArrayList<CompanyForm> favorite(String userId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         ArrayList<CompanyForm> companys = favoriteRepository.findById(userId);
         for (CompanyForm company : companys){
             companyRepository.findById(company);
@@ -39,6 +41,7 @@ public class UserService {
     }
 
     public ArrayList<HasForm> has(String userId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         ArrayList<HasForm> allHas = hasRepository.findByUserId(userId);
         for (HasForm has : allHas){
             companyRepository.findHasInfoById(has);
@@ -47,6 +50,7 @@ public class UserService {
     }
 
     public ResponseEntity<String> favoriteModify(String userId, String companyId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         boolean isExist = favoriteRepository.isExist(userId, companyId);
         if(isExist == true){
             favoriteRepository.delete(userId, companyId);
@@ -60,10 +64,12 @@ public class UserService {
     }
 
     public int maxsell(String userId, String companyId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         return hasRepository.findById(userId, companyId)[1];
     }
 
     public int maxbuy(String userId, String companyId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         int money = userInfoRepository.findMoneyById(userId);
         int orderMoney = buyRepository.findCostById(userId);
         int stockPrice = companyRepository.findStockPriceById(companyId);
@@ -71,6 +77,7 @@ public class UserService {
     }
 
     public ArrayList<OrderForm> orderall(String userId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         ArrayList<OrderForm> orders = new ArrayList<>();
         buyRepository.findOrderAllById(userId, orders);
         sellRepository.findOrderAllById(userId, orders);
@@ -78,6 +85,7 @@ public class UserService {
     }
 
     public ArrayList<OrderForm> order(String userId, String companyId) throws SQLException {
+        userId = sessionInfoRepository.getUserIdByHttpSession(userId);
         ArrayList<OrderForm> orders = new ArrayList<>();
         buyRepository.findOrderById(userId, companyId, orders);
         sellRepository.findOrderById(userId, companyId, orders);

@@ -45,10 +45,10 @@ public class LoginService {
         else if (findPassword.equals(Hashing(loginForm.getPassword()))) {
             log.info("USER LOGIN id : " + loginForm.getId());
             sessionInfoRepository.delete(loginForm.getId());
-            String uuid = UUID.randomUUID().toString();
-            sessionInfoRepository.save(loginForm.getId(), uuid);
+            String httpSession = UUID.randomUUID().toString();
+            sessionInfoRepository.save(loginForm.getId(), httpSession);
 
-            return new ResponseEntity<>('"'+uuid+'"', HttpStatus.ACCEPTED);
+            return new ResponseEntity<>('"'+httpSession+'"', HttpStatus.ACCEPTED);
         }
 
         else {
