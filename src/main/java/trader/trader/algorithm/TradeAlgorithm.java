@@ -44,13 +44,17 @@ public class TradeAlgorithm {
                 stickForms.get(i).setHighPrice(companys.get(i).getStockPrice());
                 stickForms.get(i).setLowPrice(companys.get(i).getStockPrice());
             }
-            double rate = (100 + new Random().nextInt(61) - 30) / 100.0;
+            double d = new Random().nextInt(61) - 30;
+            double rate = (100 + d) / 100.0;
             int newBP = companys.get(i).getStockPrice();
             int newSP = (int)(companys.get(i).getStockPrice() * rate);
             companys.get(i).setStockPrice(newSP);
             companys.get(i).setBeforePrice(newBP);
             companyRepository.update(companys.get(i));
-            String message = companys.get(i).getCompanyId() + newSP + rate;
+            if (d > 0){
+
+            }
+            String message = companys.get(i).getCompanyId() + " " + newSP + " " + d;
             webSocketChatHandler.sendAll(message);
 
             stickForms.get(i).setEndPrice(companys.get(i).getStockPrice());

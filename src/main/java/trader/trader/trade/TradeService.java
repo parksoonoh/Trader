@@ -37,7 +37,7 @@ public class TradeService {
         ArrayList<TradeForm> tradeForms = buyRepository.findRightNowTrade(tradeForm);
 
         for (TradeForm trade : tradeForms){
-            String buyMessage = "BUY" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            String buyMessage = "BUY " + trade.getCompanyId() + " " + trade.getPrice() + " "  + trade.getQuantity();
             userInfoRepository.updateMoney(trade.getUserId(), userInfoRepository.findMoneyById(trade.getUserId()) - (trade.getPrice() * trade.getQuantity()));
             HasForm hasForm = new HasForm();
             hasForm.setUserId(trade.getUserId());
@@ -56,7 +56,7 @@ public class TradeService {
             webSocketChatHandler.sendById(trade.getUserId(), buyMessage);
 
 
-            String sellMessage = "SELL" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            String sellMessage = "SELL " + trade.getCompanyId() + " "  + trade.getPrice() + " "  + trade.getQuantity();
             userInfoRepository.updateMoney(tradeForm.getUserId(), userInfoRepository.findMoneyById(tradeForm.getUserId()) + (trade.getPrice() * trade.getQuantity()));
             webSocketChatHandler.sendById(tradeForm.getUserId(), sellMessage);
 
@@ -89,7 +89,7 @@ public class TradeService {
         ArrayList<TradeForm> tradeForms = sellRepository.findRightNowTrade(tradeForm);
 
         for (TradeForm trade : tradeForms){
-            String sellMessage = "SELL" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            String sellMessage = "SELL " + trade.getCompanyId() + " "  + trade.getPrice() + " "  + trade.getQuantity();
 
             userInfoRepository.updateMoney(trade.getUserId(), userInfoRepository.findMoneyById(trade.getUserId()) + (trade.getPrice() * trade.getQuantity()));
 
@@ -107,7 +107,7 @@ public class TradeService {
 
             webSocketChatHandler.sendById(trade.getUserId(), sellMessage);
 
-            String buyMessage = "BUY" + trade.getCompanyId() + trade.getPrice() + trade.getQuantity();
+            String buyMessage = "BUY " + trade.getCompanyId() + " "  + trade.getPrice() + " "  + trade.getQuantity();
             userInfoRepository.updateMoney(tradeForm.getUserId(), userInfoRepository.findMoneyById(tradeForm.getUserId()) - (trade.getPrice() * trade.getQuantity()));
             initQP[0] += trade.getQuantity() * trade.getPrice();
             tempQ += trade.getQuantity();
