@@ -137,6 +137,23 @@ public class HasRepository {
         }
     }
 
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM HAS CASCADE";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+            log.info("HASRepository clear");
+        }catch (SQLException e){
+            log.error("HASRepository clear error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
+
     private void close(Connection con, Statement stmt, ResultSet rs){
 
         if (rs != null){

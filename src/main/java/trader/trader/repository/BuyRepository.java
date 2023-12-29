@@ -199,6 +199,23 @@ public class BuyRepository {
         }
     }
 
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM BUY CASCADE";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+            log.info("BUYRepository clear");
+        }catch (SQLException e){
+            log.error("BUYRepository clear error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
+
     private void close(Connection con, Statement stmt, ResultSet rs){
 
         if (rs != null){

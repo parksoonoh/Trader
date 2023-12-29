@@ -79,7 +79,7 @@ public class CompanyRepository {
             pstmt.setInt(2, companyForm.getBeforePrice());
             pstmt.setString(3, companyForm.getCompanyId());
             pstmt.executeUpdate();
-            //log.info("Company Update Id = {}, Price = {}", companyForm.getCompanyId(), companyForm.getStockPrice());
+            log.info("Company Update Id = {}, Price = {}", companyForm.getCompanyId(), companyForm.getStockPrice());
         }catch (SQLException e){
             log.error("CompanyRepository Update error",e);
             throw e;
@@ -160,6 +160,32 @@ public class CompanyRepository {
         }
     }
 
+    public void makeInitialCompany() throws SQLException {
+        save(new CompanyForm("testCompanyId35", "A전자", 65000, 60000));
+        save(new CompanyForm("testCompanyId2", "B철강", 73000, 71000));
+        save(new CompanyForm("testCompanyId3", "C화학", 85000, 87000));
+        save(new CompanyForm("testCompanyId4", "D제약", 75000, 77000));
+        save(new CompanyForm("testCompanyId5", "E뷰티", 92000, 89000));
+        log.info("makeInitialCompany complete");
+
+    }
+
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM COMPANY CASCADE";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+            log.info("COMPANYRepository clear");
+        }catch (SQLException e){
+            log.error("COMPANYRepository clear error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
 
     private void close(Connection con, Statement stmt, ResultSet rs){
 

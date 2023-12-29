@@ -108,6 +108,23 @@ public class FavoriteRepository {
         }
     }
 
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM FAVORITE CASCADE";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+            log.info("FAVORITERepository clear");
+        }catch (SQLException e){
+            log.error("FAVORITERepository clear error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
+
     private void close(Connection con, Statement stmt, ResultSet rs){
 
         if (rs != null){

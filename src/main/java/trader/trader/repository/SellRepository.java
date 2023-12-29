@@ -176,6 +176,24 @@ public class SellRepository {
         }
     }
 
+    public void clear() throws SQLException {
+        String sql = "DELETE FROM SELL CASCADE";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.executeUpdate();
+            log.info("SellRepository clear");
+        }catch (SQLException e){
+            log.error("SellRepository clear error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
+
+
     private void close(Connection con, Statement stmt, ResultSet rs){
 
         if (rs != null){

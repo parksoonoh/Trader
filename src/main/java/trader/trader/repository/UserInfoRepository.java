@@ -9,6 +9,8 @@ import trader.trader.form.UserInfoForm;
 
 import java.sql.*;
 
+import static trader.trader.connection.GameConst.initialMoney;
+
 @Slf4j
 @Repository
 public class UserInfoRepository {
@@ -131,6 +133,24 @@ public class UserInfoRepository {
         }finally {
 
             close(con, pstmt, rs);
+        }
+    }
+
+    public void resetUserMoney() throws SQLException {
+        String sql = "UPDATE USER_INFO SET MONEY = ?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, initialMoney);
+            pstmt.executeUpdate();
+            log.info("USER Money Initialized");
+        }catch (SQLException e){
+            log.error("UserInfoRepository InitialMoney error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
         }
     }
 
