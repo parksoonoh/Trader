@@ -3,6 +3,7 @@ package trader.trader.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import trader.trader.connection.DBConnectionUtil;
+import trader.trader.connection.GameConst;
 import trader.trader.form.CompanyForm;
 import trader.trader.form.OrderForm;
 import trader.trader.form.TradeForm;
@@ -176,6 +177,26 @@ public class SellRepository {
         }
     }
 
+    public void updateInitStock(String companyId, int price) throws SQLException {
+        String sql = "UPDATE SELL SET SELL_PRICE = ? WHERE COMPANY_ID = ? AND USER_ID = ?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setInt(1, price);
+            pstmt.setString(2, companyId);
+            pstmt.setString(3, GameConst.managerId);
+            pstmt.executeUpdate();
+            log.info("SELLInitStock Update Completed");
+        }catch (SQLException e){
+            log.error("SELLRepository SELLInitStock Update error",e);
+            throw e;
+        }finally {
+            close(con, pstmt, null);
+        }
+    }
     public void clear() throws SQLException {
         String sql = "DELETE FROM SELL CASCADE";
         Connection con = null;

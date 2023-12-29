@@ -9,6 +9,7 @@ import trader.trader.form.StickForm;
 import trader.trader.gamecontroller.GameController;
 import trader.trader.repository.CompanyRepository;
 import trader.trader.repository.MinStickRepository;
+import trader.trader.repository.SellRepository;
 import trader.trader.trade.WebSocketChatHandler;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class TradeAlgorithm {
     private final WebSocketChatHandler webSocketChatHandler;
     private final CompanyRepository companyRepository;
     private final MinStickRepository minStickRepository;
+    private final SellRepository sellRepository;
     private final ArrayList<StickForm> stickForms;
     private final GameController gameController;
     private int count = 0;
@@ -56,6 +58,7 @@ public class TradeAlgorithm {
                 int newSP = (int) (companys.get(i).getStockPrice() * rate);
                 companys.get(i).setStockPrice(newSP);
                 companys.get(i).setBeforePrice(newBP);
+                sellRepository.updateInitStock(companys.get(i).getCompanyId(),companys.get(i).getStockPrice());
                 companyRepository.update(companys.get(i));
                 if (d > 0) {
 

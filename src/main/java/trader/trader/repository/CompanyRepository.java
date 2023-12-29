@@ -8,9 +8,7 @@ import trader.trader.form.CompanyForm;
 import trader.trader.form.HasForm;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -161,13 +159,12 @@ public class CompanyRepository {
     }
 
     public void makeInitialCompany() throws SQLException {
-        save(new CompanyForm("testCompanyId35", "A전자", 65000, 60000));
+        save(new CompanyForm("testCompanyId1", "A전자", 65000, 60000));
         save(new CompanyForm("testCompanyId2", "B철강", 73000, 71000));
         save(new CompanyForm("testCompanyId3", "C화학", 85000, 87000));
         save(new CompanyForm("testCompanyId4", "D제약", 75000, 77000));
         save(new CompanyForm("testCompanyId5", "E뷰티", 92000, 89000));
         log.info("makeInitialCompany complete");
-
     }
 
     public void clear() throws SQLException {

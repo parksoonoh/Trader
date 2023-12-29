@@ -3,10 +3,14 @@ package trader.trader.gamecontroller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import trader.trader.form.CompanyForm;
+import trader.trader.form.TradeForm;
 import trader.trader.repository.*;
 import trader.trader.trade.WebSocketChatHandler;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -50,10 +54,20 @@ public class GameController {
         hasRepository.clear();
         minStickRepository.clear();
         companyRepository.clear();
-        // usererRanking update logic
+        // userRanking update logic
         userInfoRepository.resetUserMoney();
         companyRepository.makeInitialCompany();
         // 거래량 생성기
+        ArrayList<CompanyForm> initCompanys = companyRepository.findAllCompany();
+        for (CompanyForm initCompany : initCompanys){
+            TradeForm tradeForm = new TradeForm();
+            tradeForm.setDate(System.currentTimeMillis());
+            tradeForm.setUserId("manager");
+            tradeForm.setCompanyId(initCompany.getCompanyId());
+            tradeForm.setPrice(initCompany.getStockPrice());
+            tradeForm.setQuantity(100);
+            sellRepository.save(tradeForm);
+        }
     }
 
      public Boolean getIsStart(){
